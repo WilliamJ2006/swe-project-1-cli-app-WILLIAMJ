@@ -3,6 +3,7 @@ const rounds = {
     losses: 0,
     ties: 0,
     matches: 0,
+    winRate: 0,
 };
 
 const play = (choice) => {
@@ -27,7 +28,12 @@ const play = (choice) => {
 };
 
 const viewStats = () => {
-    console.log(`Matches: ${rounds.matches}\n Wins: ${rounds.wins}\n Losses: ${rounds.losses}\n Ties: ${rounds.ties}`);
+    console.log(`
+    Matches: ${rounds.matches}
+    Wins: ${rounds.wins}
+    Losses: ${rounds.losses}
+    Ties: ${rounds.ties}
+    Win Rate: ${rounds.wins / rounds.matches ? (rounds.wins / rounds.matches) * 100 : 0}%`);
 };
 
 module.exports = {

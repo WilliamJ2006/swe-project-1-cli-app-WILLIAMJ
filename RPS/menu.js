@@ -6,7 +6,6 @@ const {
 
 const showMenu = () => {
     let isRunning = true;
-
     while (isRunning) {
         console.log('Menu:');
         console.log('1. Play Round');
@@ -19,13 +18,13 @@ const showMenu = () => {
             console.log('1. Rock');
             console.log('2. Paper');
             console.log('3. Scissors');
-            console.log('4. Exit Game\n');
+            console.log('4. Go Back\n');
             const choice = prompt('Choose an option: ');
             if (choice === '1' || choice === '2' || choice === '3') {
                 play(choice);
             } else if (choice === '4') {
                 console.clear();
-                showMenu();
+                continue;
             } else {
                 console.log('Invalid option, try again.');
             }
