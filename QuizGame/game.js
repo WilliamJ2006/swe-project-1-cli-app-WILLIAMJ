@@ -27,7 +27,7 @@ const questions = [
         choices: ["32", "192", "0", "67"],
         answerIndex: 1
     },
-]
+];
 
 const addHighScore = (playerScore) => {
     loadHighScore();
@@ -38,8 +38,11 @@ const addHighScore = (playerScore) => {
 }
 
 const loadHighScore = () => {
-    let scores = fs.readFileSync('./highscore.json', 'utf-8')
-    if (scores.length > 0) {
+    if (!fs.existsSync('./highscore.json')) {
+        fs.writeFileSync('./highscore.json', JSON.stringify([], null, 2));
+        highScore = [];
+    } else {
+        let scores = fs.readFileSync('./highscore.json', 'utf-8')
         highScore = JSON.parse(scores);
         highScore = highScore.slice(0, 5);
     }
@@ -98,7 +101,7 @@ const startQuiz = () => {
     if (highScore.find((player) => player.score <= Math.round(score.correct / score.total * 100)) || highScore.length < 5) {
         console.log('Congratulations! You scored a high score!')
         let name = prompt('Enter your name: ')
-        while (!name.match(/^[a-zA-z]+$/)) {
+        while (!name.match(/^[a-zA-Z]+$/)) {
             console.log('\nInvalid! Please try again.');
             name = prompt('Enter your name: ');
         }
@@ -122,12 +125,13 @@ const viewScores = () => {
 const clearScores = () => {
     loadHighScore();
     if (highScore.length > 0) {
+        console.clear();
         console.log(`Cleared ${highScore.length} high score(s).`)
         highScore = [];
         fs.writeFileSync('./highscore.json', JSON.stringify(highScore, null, 2));
     } else {
         console.clear();
-        viewScores();
+        console.log('No high scores to clear!')
     }
 }
 
