@@ -113,12 +113,15 @@ const startQuiz = () => {
     }
 };
 
+
 const viewScores = () => {
     loadHighScore();
     if (highScore.length === 0) {
         console.log('No high scores yet!')
     } else {
-        highScore.forEach((player) => console.log(`${player.score} (${player.name}) - ${player.dateOfScore}`))
+        let scoreList = 1;
+        console.log(`High Scores:\n`)
+        highScore.forEach((player) => console.log(`${scoreList++}. ${player.score} (${player.name}) - ${player.dateOfScore}`))
     }
 };
 
