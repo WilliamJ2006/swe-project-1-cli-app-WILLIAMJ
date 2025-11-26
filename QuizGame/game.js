@@ -29,6 +29,7 @@ const questions = [
     },
 ];
 
+
 const addHighScore = (playerScore) => {
     loadHighScore();
     highScore.unshift(playerScore);
@@ -112,7 +113,6 @@ const startQuiz = () => {
         addHighScore(finalScore);
     }
 };
-
 
 const viewScores = () => {
     loadHighScore();
