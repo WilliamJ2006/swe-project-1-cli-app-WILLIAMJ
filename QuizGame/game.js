@@ -29,7 +29,6 @@ const questions = [
     },
 ];
 
-
 const addHighScore = (playerScore) => {
     loadHighScore();
     highScore.unshift(playerScore);
