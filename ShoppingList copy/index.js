@@ -1,10 +1,14 @@
-const { showMenu } = require('./menu.js')
+const { ShowMenu } = require('./menu.js')
+const showMenu = new ShowMenu();
 
-const startApp = () => {
-    console.clear();
-    console.log("Welcome!\n");
-    showMenu();
-    console.log("Goodbye!");
+class App {
+    start() {
+        console.clear();
+        console.log("Welcome!\n");
+        showMenu.start();
+        console.log("Goodbye!");
+    }
 }
 
-startApp();
+const app = new App();
+app.start();
