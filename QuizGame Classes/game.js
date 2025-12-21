@@ -1,20 +1,9 @@
 const prompt = require("prompt-sync")({ sigint: true });
 const fs = require("fs");
-const { questions } = require("./questions");
+const { Questions } = require("./questions");
 
 class Game {
   highScore = [];
-
-  addHighScore(playerScore) {
-    this.loadHighScore();
-    this.highScore.unshift(playerScore);
-    this.highScore.sort((a, b) => b.score - a.score);
-    this.highScore = this.highScore.slice(0, 5);
-    fs.writeFileSync(
-      "./highscore.json",
-      JSON.stringify(this.highScore, null, 2)
-    );
-  }
 
   loadHighScore() {
     if (!fs.existsSync("./highscore.json")) {
@@ -23,33 +12,40 @@ class Game {
     } else {
       let scores = fs.readFileSync("./highscore.json", "utf-8");
       this.highScore = JSON.parse(scores);
+      this.highScore.sort(
+      (a, b) => b.score * Math.log2(b.questionCount + 1) - a.score * Math.log2(a.questionCount + 1));
       this.highScore = this.highScore.slice(0, 5);
     }
   }
 
-  shuffle(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const copy = arr[i];
-      [arr[i], arr[j]] = [arr[j], copy];
-    }
+  addHighScore(playerScore) {
+    this.highScore.unshift(playerScore);
+    this.highScore.sort(
+      (a, b) => b.score * Math.log2(b.questionCount + 1) - a.score * Math.log2(a.questionCount + 1)
+    );
+    this.highScore = this.highScore.slice(0, 5);
+    fs.writeFileSync(
+      "./highscore.json",
+      JSON.stringify(this.highScore, null, 2)
+    );
   }
 
   startQuiz() {
+    const question = new Questions();
     this.loadHighScore();
     const score = { correct: 0, total: 0 };
     const finalScore = {};
-    let indexOfDoneQ = [];
     let questionNum = 0;
     let questionRunning = true;
-    let randomQ = Math.floor(Math.random() * questions.length);
+    let qCount = Number(prompt("How many questions do you want?: ").trim());
+    while (qCount <= 0) {
+      console.log("\nInvalid! Please try again.");
+      qCount = Number(prompt("How many questions do you want?: ").trim());
+    }
     while (questionRunning) {
-      const question = questions[randomQ];
-      const correctAnswer = question.choices[question.answerIndex];
+      question.randQ();
       console.log(`Question ${++questionNum}`);
       console.log(`\n${question.question}?`);
-      this.shuffle(question.choices);
-      question.answerIndex = question.choices.indexOf(correctAnswer);
       question.choices.forEach((answer, index) =>
         console.log(`${index + 1}. ${answer}`)
       );
@@ -73,12 +69,7 @@ class Game {
           (score.correct / score.total) * 100
         )}%)\n`
       );
-      indexOfDoneQ.push(randomQ);
-      if (indexOfDoneQ.length !== questions.length) {
-        while (indexOfDoneQ.includes(randomQ)) {
-          randomQ = Math.floor(Math.random() * questions.length);
-        }
-      } else {
+      if (questionNum === qCount) {
         console.log(`\nThanks for playing!`);
         questionRunning = false;
       }
@@ -86,7 +77,7 @@ class Game {
     if (
       this.highScore.find(
         (player) =>
-          player.score <= Math.round((score.correct / score.total) * 100)
+          player.score * Math.log2(player.questionCount + 1) <= Math.round((score.correct / score.total) * 100) * Math.log2(score.total +1)
       ) ||
       this.highScore.length < 5
     ) {
@@ -98,6 +89,7 @@ class Game {
       }
       finalScore.name = name;
       finalScore.score = Math.round((score.correct / score.total) * 100);
+      finalScore.questionCount = qCount;
       let date = new Date();
       finalScore.dateOfScore = `${date.getMonth() + 1}/${date.getDate()}/${date
         .getFullYear()
@@ -118,7 +110,7 @@ class Game {
         console.log(
           `${scoreList++}. ${player.score} (${player.name}) - ${
             player.dateOfScore
-          }`
+          } - ${player.questionCount} Questions`
         )
       );
     }
